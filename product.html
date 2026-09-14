@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-page-title>Product — Waffle Nibbles by Healthy Munching</title>
+  <meta name="description" content="Full details, ingredients, allergens, and nutrition for this Waffle Nibbles waffle snack by Healthy Munching." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="index.html"><img class="brand__logo" src="assets/images/brand/healthy-munching-logo.png" alt="Healthy Munching logo" width="40" height="40" /> Healthy Munching</a>
+      <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle menu">☰</button>
+      <nav class="nav-menu" id="primary-nav" data-nav-menu aria-label="Primary">
+        <a href="index.html" data-nav-link>Home</a>
+        <a href="catalog.html" data-nav-link>Shop</a>
+        <a href="cart.html" data-nav-link class="cart-link">Cart <span class="cart-badge" data-cart-count hidden>0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="container">
+    <div data-product-found>
+      <div class="product-detail">
+        <div class="product-detail__image">
+          <img data-field="image" src="" alt="" width="500" height="500" />
+        </div>
+        <div>
+          <span class="product-card__category" data-field="category"></span>
+          <h1 data-field="name"></h1>
+          <p data-field="fullDescription"></p>
+          <div class="product-detail__price">₹<span data-field="price"></span></div>
+
+          <div class="product-detail__actions">
+            <div class="qty-stepper" role="group" aria-label="Quantity">
+              <button type="button" class="btn-icon" data-qty-decrease aria-label="Decrease quantity">−</button>
+              <span class="qty-stepper__value" data-qty-value aria-live="polite">1</span>
+              <button type="button" class="btn-icon" data-qty-increase aria-label="Increase quantity">+</button>
+            </div>
+            <button type="button" class="btn btn-primary" data-add-to-cart>Add to Cart</button>
+          </div>
+          <p class="product-detail__confirm" data-add-confirm hidden role="status">Added to cart!</p>
+
+          <div class="info-block">
+            <h3>Ingredients</h3>
+            <ul class="tag-list" data-field="ingredients"></ul>
+          </div>
+
+          <div class="info-block">
+            <h3>Allergens</h3>
+            <ul class="tag-list" data-field="allergens"></ul>
+          </div>
+
+          <div class="info-block">
+            <h3>Nutrition (per serving)</h3>
+            <table class="nutrition-table">
+              <tbody>
+                <tr><th scope="row">Calories</th><td data-field="calories"></td></tr>
+                <tr><th scope="row">Protein</th><td data-field="protein"></td></tr>
+                <tr><th scope="row">Carbohydrates</th><td data-field="carbs"></td></tr>
+                <tr><th scope="row">Fat</th><td data-field="fat"></td></tr>
+                <tr><th scope="row">Fiber</th><td data-field="fiber"></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-product-not-found hidden class="empty-state">
+      <h2>We couldn't find that product</h2>
+      <p>It may have been removed from the menu.</p>
+      <a class="btn btn-primary" href="catalog.html">Back to Shop</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <div>
+        <img class="site-footer__logo" src="assets/images/brand/healthy-munching-logo.png" alt="Healthy Munching logo" width="48" height="48" />
+        <h4>Healthy Munching</h4>
+        <p>Makers of Waffle Nibbles — healthy waffle snacks, baked not fried, made with real ingredients.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="catalog.html">All Waffle Nibbles products</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="index.html#about">About Healthy Munching</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container">
+      <small>&copy; 2026 Healthy Munching. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script src="js/data/products.js" defer></script>
+  <script src="js/cart.js" defer></script>
+  <script src="js/nav.js" defer></script>
+  <script src="js/product.js" defer></script>
+</body>
+</html>

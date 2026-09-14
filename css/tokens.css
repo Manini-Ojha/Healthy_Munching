@@ -1,0 +1,112 @@
+/*
+  Design tokens for Waffle Nibbles.
+  Single source of truth for color, type, spacing, radii, and shadows.
+  Every other stylesheet MUST consume these custom properties instead of
+  hard-coding values (Constitution Principle I & III).
+*/
+
+:root {
+  /* Color palette - warm, food-brand, "healthy" feel */
+  --color-bg: #fffaf3;
+  --color-surface: #ffffff;
+  --color-surface-alt: #fff3e2;
+  --color-text: #2b2117;
+  --color-text-muted: #6b5d4f;
+  --color-border: #ead9c4;
+
+  --color-brand: #c1682b;
+  --color-brand-dark: #93481a;
+  --color-brand-light: #f3ad6a;
+
+  --color-accent: #5c8a52;
+  --color-accent-dark: #3f6438;
+
+  --color-error: #b3261e;
+  --color-error-bg: #fbeceb;
+  --color-success: #2e6b3e;
+
+  --color-focus-ring: #1a56db;
+
+  /* Typography */
+  --font-body: "Nunito Sans", "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+
+  --line-tight: 1.2;
+  --line-normal: 1.55;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Radii & shadows */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(43, 33, 23, 0.08);
+  --shadow-md: 0 6px 20px rgba(43, 33, 23, 0.10);
+  --shadow-lg: 0 14px 34px rgba(43, 33, 23, 0.14);
+
+  /* Layout */
+  --content-max-width: 1200px;
+  --header-height: 72px;
+
+  /* Motion */
+  --transition-fast: 150ms ease;
+  --transition-base: 220ms ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #1c1712;
+    --color-surface: #262019;
+    --color-surface-alt: #2f2820;
+    --color-text: #f5ece1;
+    --color-text-muted: #cbb9a4;
+    --color-border: #3c3226;
+
+    --color-brand: #f3ad6a;
+    --color-brand-dark: #f7c58d;
+    --color-brand-light: #c1682b;
+
+    --color-accent: #8fc282;
+    --color-accent-dark: #6fa663;
+
+    --color-error-bg: #3a201d;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #1c1712;
+  --color-surface: #262019;
+  --color-surface-alt: #2f2820;
+  --color-text: #f5ece1;
+  --color-text-muted: #cbb9a4;
+  --color-border: #3c3226;
+
+  --color-brand: #f3ad6a;
+  --color-brand-dark: #f7c58d;
+  --color-brand-light: #c1682b;
+
+  --color-accent: #8fc282;
+  --color-accent-dark: #6fa663;
+
+  --color-error-bg: #3a201d;
+}

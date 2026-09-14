@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Healthy Munching</title>
+  <meta name="description" content="Complete your Waffle Nibbles order from Healthy Munching: delivery details and order summary." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="index.html"><img class="brand__logo" src="assets/images/brand/healthy-munching-logo.png" alt="Healthy Munching logo" width="40" height="40" /> Healthy Munching</a>
+      <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle menu">☰</button>
+      <nav class="nav-menu" id="primary-nav" data-nav-menu aria-label="Primary">
+        <a href="index.html" data-nav-link>Home</a>
+        <a href="catalog.html" data-nav-link>Shop</a>
+        <a href="cart.html" data-nav-link class="cart-link">Cart <span class="cart-badge" data-cart-count hidden>0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="container">
+    <div class="page-header" style="text-align:left; padding-inline:0;">
+      <h1>Checkout</h1>
+    </div>
+
+    <!-- Shown when the cart has items -->
+    <div data-checkout-form-section>
+      <div class="checkout-layout">
+        <form novalidate data-checkout-form>
+          <div class="form-field" data-field-wrap="name">
+            <label for="name">Full name</label>
+            <input type="text" id="name" name="name" autocomplete="name" required />
+            <p class="form-error" data-error-for="name">Please enter your full name.</p>
+          </div>
+
+          <div class="form-field" data-field-wrap="email">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+            <p class="form-error" data-error-for="email">Please enter a valid email address.</p>
+          </div>
+
+          <div class="form-field" data-field-wrap="phone">
+            <label for="phone">Phone number</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" required />
+            <p class="form-error" data-error-for="phone">Please enter a valid phone number.</p>
+          </div>
+
+          <div class="form-field" data-field-wrap="address">
+            <label for="address">Delivery address</label>
+            <textarea id="address" name="address" autocomplete="street-address" required></textarea>
+            <p class="form-error" data-error-for="address">Please enter your delivery address.</p>
+          </div>
+
+          <button type="submit" class="btn btn-primary" data-submit-order>Place Order</button>
+        </form>
+
+        <aside class="order-summary" aria-label="Order summary">
+          <h2 style="font-size:var(--text-lg); margin-bottom:var(--space-3);">Order Summary</h2>
+          <div data-order-summary-items></div>
+          <div class="cart-summary__row cart-summary__row--total">
+            <span>Subtotal</span>
+            <span>₹<span data-order-subtotal>0</span></span>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Shown after a successful submit -->
+    <div data-confirmation-section hidden class="confirmation">
+      <div class="confirmation__icon" aria-hidden="true">✅</div>
+      <h2>Thank you, your order is placed!</h2>
+      <p>Order reference: <span class="confirmation__ref" data-order-reference></span></p>
+      <p>A summary has been recorded for <span data-confirm-name></span>. We'll be in touch at <span data-confirm-email></span>.</p>
+      <a class="btn btn-primary" href="catalog.html">Continue Shopping</a>
+    </div>
+
+    <!-- Shown when checkout is reached with an empty cart -->
+    <div data-empty-cart-guard hidden class="empty-state">
+      <h2>Your cart is empty</h2>
+      <p>Add something delicious before checking out.</p>
+      <a class="btn btn-primary" href="catalog.html">Browse the shop</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <div>
+        <img class="site-footer__logo" src="assets/images/brand/healthy-munching-logo.png" alt="Healthy Munching logo" width="48" height="48" />
+        <h4>Healthy Munching</h4>
+        <p>Makers of Waffle Nibbles — healthy waffle snacks, baked not fried, made with real ingredients.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="catalog.html">All Waffle Nibbles products</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="index.html#about">About Healthy Munching</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container">
+      <small>&copy; 2026 Healthy Munching. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script src="js/data/products.js" defer></script>
+  <script src="js/cart.js" defer></script>
+  <script src="js/nav.js" defer></script>
+  <script src="js/checkout.js" defer></script>
+</body>
+</html>
