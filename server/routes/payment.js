@@ -1,5 +1,5 @@
 const express = require("express");
-const { db, rowToProduct } = require("../db");
+const { all, rowToProduct } = require("../db");
 const { ownerId } = require("../ownerId");
 const { razorpay, isConfigured, keyId } = require("../razorpay");
 
@@ -15,11 +15,10 @@ router.post("/create-order", async (req, res) => {
   }
 
   const owner = ownerId(req);
-  const cartRows = db
-    .prepare(
-      `SELECT ci.quantity, p.* FROM cart_items ci JOIN products p ON p.id = ci.product_id WHERE ci.owner_id = ?`
-    )
-    .all(owner);
+  const cartRows = await all(
+    `SELECT ci.quantity, p.* FROM cart_items ci JOIN products p ON p.id = ci.product_id WHERE ci.owner_id = ?`,
+    [owner]
+  );
 
   if (cartRows.length === 0) {
     return res.status(400).json({ error: "Your cart is empty." });
