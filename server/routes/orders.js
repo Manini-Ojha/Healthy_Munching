@@ -1,6 +1,8 @@
+const crypto = require("crypto");
 const express = require("express");
 const { db } = require("../db");
 const { ownerId } = require("../ownerId");
+const { isConfigured } = require("../razorpay");
 
 const router = express.Router();
 
@@ -11,8 +13,16 @@ function generateReferenceNumber() {
   return `WN-${Date.now().toString(36).toUpperCase()}`;
 }
 
+function verifyRazorpaySignature({ razorpayOrderId, razorpayPaymentId, razorpaySignature }) {
+  const expected = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+    .digest("hex");
+  return expected === razorpaySignature;
+}
+
 router.post("/", (req, res) => {
-  const { name, email, phone, address } = req.body || {};
+  const { name, email, phone, address, razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body || {};
   if (
     !name || !String(name).trim() ||
     !EMAIL_PATTERN.test(email || "") ||
@@ -20,6 +30,19 @@ router.post("/", (req, res) => {
     !address || !String(address).trim()
   ) {
     return res.status(400).json({ error: "Name, valid email, valid phone and address are required." });
+  }
+
+  // Payment is required once the gateway is configured; until Razorpay keys
+  // are added to .env, orders go through unpaid so checkout stays testable.
+  let paymentStatus = "not_required";
+  if (isConfigured) {
+    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+      return res.status(400).json({ error: "Payment was not completed." });
+    }
+    if (!verifyRazorpaySignature({ razorpayOrderId, razorpayPaymentId, razorpaySignature })) {
+      return res.status(400).json({ error: "Payment verification failed." });
+    }
+    paymentStatus = "paid";
   }
 
   const owner = ownerId(req);
@@ -41,10 +64,21 @@ router.post("/", (req, res) => {
   const placeOrder = db.transaction(() => {
     const info = db
       .prepare(
-        `INSERT INTO orders (reference_number, user_id, name, email, phone, address, subtotal)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO orders (reference_number, user_id, name, email, phone, address, subtotal, payment_status, razorpay_order_id, razorpay_payment_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
-      .run(referenceNumber, req.session.userId || null, String(name).trim(), String(email).trim(), String(phone).trim(), String(address).trim(), subtotal);
+      .run(
+        referenceNumber,
+        req.session.userId || null,
+        String(name).trim(),
+        String(email).trim(),
+        String(phone).trim(),
+        String(address).trim(),
+        subtotal,
+        paymentStatus,
+        razorpayOrderId || null,
+        razorpayPaymentId || null
+      );
 
     const orderId = info.lastInsertRowid;
     const insertItem = db.prepare(
@@ -59,7 +93,7 @@ router.post("/", (req, res) => {
   });
 
   const orderId = placeOrder();
-  res.status(201).json({ id: orderId, referenceNumber, subtotal });
+  res.status(201).json({ id: orderId, referenceNumber, subtotal, paymentStatus });
 });
 
 router.get("/", (req, res) => {
@@ -73,6 +107,7 @@ router.get("/", (req, res) => {
       id: o.id,
       referenceNumber: o.reference_number,
       subtotal: o.subtotal,
+      paymentStatus: o.payment_status,
       createdAt: o.created_at,
       items: itemsStmt.all(o.id)
     }))

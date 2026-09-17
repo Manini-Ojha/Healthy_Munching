@@ -1,6 +1,9 @@
-node_modules/
+node_modules
+.git
+.env
 server/data.sqlite
 server/data.sqlite-shm
 server/data.sqlite-wal
-server/certs/key.pem
-.env
+server/certs
+.specify
+.claude

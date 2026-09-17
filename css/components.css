@@ -177,6 +177,34 @@
   color: var(--color-brand-dark);
 }
 
+/* ---------- Catalog search ---------- */
+
+.search-bar {
+  margin-bottom: var(--space-5);
+}
+
+.search-bar input[type="search"] {
+  width: 100%;
+  max-width: 48ch;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-md);
+  font-family: inherit;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.search-bar input[type="search"]:focus {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.search-no-results {
+  color: var(--color-muted);
+  padding-block: var(--space-4);
+}
+
 /* ---------- Quantity stepper ---------- */
 
 .qty-stepper {
@@ -207,6 +235,20 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-surface-alt);
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+  border: 1px solid var(--color-border);
+}
+
+.product-detail__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .product-detail__price {
@@ -273,6 +315,106 @@
     grid-template-columns: 1fr;
     gap: var(--space-5);
   }
+}
+
+/* ---------- Reviews ---------- */
+
+.reviews-section {
+  border-top: 1px solid var(--color-border);
+  padding-block: var(--space-7);
+}
+
+.reviews-summary {
+  color: var(--color-muted);
+  margin-bottom: var(--space-4);
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.review-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--color-surface);
+}
+
+.review-card__stars {
+  color: var(--color-brand);
+  letter-spacing: 0.1em;
+  font-size: var(--text-md);
+}
+
+.review-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.review-card__author {
+  font-weight: 700;
+}
+
+.review-card__date {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.review-form {
+  max-width: 48ch;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-6);
+}
+
+.star-input {
+  display: inline-flex;
+  gap: var(--space-1);
+}
+
+.star-input__star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  color: var(--color-border);
+  padding: 0;
+}
+
+.star-input__star:hover,
+.star-input__star.is-active {
+  color: var(--color-brand);
+}
+
+/* ---------- Suggestion / add-to-cart cards ---------- */
+
+.product-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+.product-card__add-btn {
+  border: none;
+  background: var(--color-brand-dark);
+  color: var(--color-on-brand, #fff);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-3);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.product-card__add-btn:hover {
+  filter: brightness(1.08);
 }
 
 /* ---------- Cart page ---------- */
@@ -369,6 +511,50 @@
   .cart-item__image { grid-area: image; width: 56px; height: 56px; }
   .cart-item__info { grid-area: name; }
   .cart-item__controls { grid-area: controls; display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+}
+
+/* ---------- Login modal ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 100;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.modal__close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  background: none;
+  border: none;
+  font-size: var(--text-lg);
+  line-height: 1;
+  cursor: pointer;
+  padding: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.modal__close:hover {
+  color: var(--color-text);
 }
 
 /* ---------- Forms (checkout) ---------- */

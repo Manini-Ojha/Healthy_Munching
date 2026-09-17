@@ -2,7 +2,10 @@ const path = require("path");
 const Database = require("better-sqlite3");
 const PRODUCTS = require("../js/data/products.js");
 
-const db = new Database(path.join(__dirname, "data.sqlite"));
+// DB_PATH lets production point this at a mounted persistent volume (e.g. Fly.io volumes);
+// defaults to a file alongside this module for local dev.
+const dbPath = process.env.DB_PATH || path.join(__dirname, "data.sqlite");
+const db = new Database(dbPath);
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
@@ -46,6 +49,9 @@ db.exec(`
     phone TEXT NOT NULL,
     address TEXT NOT NULL,
     subtotal INTEGER NOT NULL,
+    payment_status TEXT NOT NULL DEFAULT 'pending',
+    razorpay_order_id TEXT,
+    razorpay_payment_id TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -58,7 +64,29 @@ db.exec(`
     quantity INTEGER NOT NULL,
     line_total INTEGER NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id TEXT NOT NULL REFERENCES products(id),
+    user_id INTEGER REFERENCES users(id),
+    author_name TEXT NOT NULL,
+    rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);
+
+// Lightweight migration for columns added after the table already existed on disk.
+const orderColumns = db.prepare("PRAGMA table_info(orders)").all().map((c) => c.name);
+if (!orderColumns.includes("payment_status")) {
+  db.exec("ALTER TABLE orders ADD COLUMN payment_status TEXT NOT NULL DEFAULT 'pending'");
+}
+if (!orderColumns.includes("razorpay_order_id")) {
+  db.exec("ALTER TABLE orders ADD COLUMN razorpay_order_id TEXT");
+}
+if (!orderColumns.includes("razorpay_payment_id")) {
+  db.exec("ALTER TABLE orders ADD COLUMN razorpay_payment_id TEXT");
+}
 
 // Reseed the product catalog from the shared products.js on every boot so it
 // always mirrors the source-of-truth file (this project has no admin UI yet).
