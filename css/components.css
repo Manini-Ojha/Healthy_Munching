@@ -414,6 +414,15 @@
   display: block;
 }
 
+/* Standalone error banner (e.g. login/signup forms), shown via [hidden] toggling. */
+[data-form-error] {
+  display: block;
+  font-weight: 700;
+}
+[data-form-error][hidden] {
+  display: none;
+}
+
 .checkout-layout {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;

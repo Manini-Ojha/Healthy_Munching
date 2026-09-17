@@ -18,10 +18,10 @@
     `;
   }
 
-  function render() {
+  async function render() {
     const grid = document.querySelector("[data-catalog-grid]");
     if (!grid) return;
-    const products = (window.WaffleNibbles && window.WaffleNibbles.PRODUCTS) || [];
+    const products = await window.WaffleNibbles.api.get("/api/products");
     grid.innerHTML = products.map(productCardHTML).join("");
   }
 

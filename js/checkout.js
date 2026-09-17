@@ -72,10 +72,6 @@
     return isValid;
   }
 
-  function generateReferenceNumber() {
-    return `WN-${Date.now().toString(36).toUpperCase()}`;
-  }
-
   function showConfirmation(customer, referenceNumber) {
     document.querySelector("[data-checkout-form-section]").hidden = true;
     const confirmationSection = document.querySelector("[data-confirmation-section]");
@@ -90,7 +86,7 @@
     if (!form) return;
     const submitBtn = document.querySelector("[data-submit-order]");
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const formData = new FormData(form);
 
@@ -101,28 +97,26 @@
       // Prevent double-submission (e.g., double-click).
       submitBtn.disabled = true;
 
-      const cart = window.WaffleNibbles.cart.getCart();
       const customer = {
         name: (formData.get("name") || "").toString().trim(),
         email: (formData.get("email") || "").toString().trim(),
         phone: (formData.get("phone") || "").toString().trim(),
         address: (formData.get("address") || "").toString().trim()
       };
-      const order = {
-        referenceNumber: generateReferenceNumber(),
-        customer,
-        items: cart.items,
-        subtotal: cart.subtotal
-      };
 
-      showConfirmation(customer, order.referenceNumber);
-      window.WaffleNibbles.cart.clearCart();
-      window.WaffleNibbles.nav.updateCartBadge();
+      try {
+        const order = await window.WaffleNibbles.api.post("/api/orders", customer);
+        showConfirmation(customer, order.referenceNumber);
+        window.WaffleNibbles.nav.updateCartBadge();
+      } catch (err) {
+        submitBtn.disabled = false;
+        window.alert(err.message || "Could not place order. Please try again.");
+      }
     });
   }
 
-  function init() {
-    const cart = window.WaffleNibbles.cart.getCart();
+  async function init() {
+    const cart = await window.WaffleNibbles.cart.getCart();
     if (cart.items.length === 0) {
       showEmptyCartGuard();
       return;

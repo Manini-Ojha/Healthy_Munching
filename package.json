@@ -1,0 +1,28 @@
+{
+  "name": "healthy_munching",
+  "version": "1.0.0",
+  "description": "A healthy waffle snack e-commerce storefront for **Waffle Nibbles**, the snack line made by **Healthy Munching** (the company) — plain HTML, CSS, and JavaScript, no framework, no backend, no build step required to run. The company's logo lives at [assets/images/brand/healthy-munching-logo.png](assets/images/brand/healthy-munching-logo.png) and is used in the site header/footer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Manini-Ojha/Healthy_Munching.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Manini-Ojha/Healthy_Munching/issues"
+  },
+  "homepage": "https://github.com/Manini-Ojha/Healthy_Munching#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0"
+  }
+}
