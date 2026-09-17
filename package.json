@@ -4,6 +4,7 @@
   "description": "A healthy waffle snack e-commerce storefront for **Waffle Nibbles**, the snack line made by **Healthy Munching** (the company) — plain HTML, CSS, and JavaScript, no framework, no backend, no build step required to run. The company's logo lives at [assets/images/brand/healthy-munching-logo.png](assets/images/brand/healthy-munching-logo.png) and is used in the site header/footer.",
   "main": "index.js",
   "scripts": {
+    "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,8 +22,11 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
+    "better-sqlite3-session-store": "^0.1.0",
     "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "express-session": "^1.19.0"
+    "express-session": "^1.19.0",
+    "razorpay": "^2.9.8"
   }
 }

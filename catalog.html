@@ -36,6 +36,12 @@
     </div>
 
     <section class="container page-section">
+      <div class="search-bar">
+        <label for="catalog-search" class="visually-hidden">Search products</label>
+        <input type="search" id="catalog-search" data-catalog-search placeholder="Search waffles, cookies, ingredients..." autocomplete="off" />
+      </div>
+
+      <p class="search-no-results" data-catalog-no-results hidden>No products match your search.</p>
       <div class="product-grid" data-catalog-grid aria-live="polite"></div>
     </section>
   </main>
