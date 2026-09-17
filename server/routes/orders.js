@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const express = require("express");
-const { db } = require("../db");
+const { db, all, get, run } = require("../db");
 const { ownerId } = require("../ownerId");
 const { isConfigured } = require("../razorpay");
 
@@ -21,7 +21,7 @@ function verifyRazorpaySignature({ razorpayOrderId, razorpayPaymentId, razorpayS
   return expected === razorpaySignature;
 }
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { name, email, phone, address, razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body || {};
   if (
     !name || !String(name).trim() ||
@@ -46,13 +46,12 @@ router.post("/", (req, res) => {
   }
 
   const owner = ownerId(req);
-  const cartRows = db
-    .prepare(
-      `SELECT ci.quantity, p.id as product_id, p.name as product_name, p.price
-       FROM cart_items ci JOIN products p ON p.id = ci.product_id
-       WHERE ci.owner_id = ?`
-    )
-    .all(owner);
+  const cartRows = await all(
+    `SELECT ci.quantity, p.id as product_id, p.name as product_name, p.price
+     FROM cart_items ci JOIN products p ON p.id = ci.product_id
+     WHERE ci.owner_id = ?`,
+    [owner]
+  );
 
   if (cartRows.length === 0) {
     return res.status(400).json({ error: "Your cart is empty." });
@@ -61,13 +60,13 @@ router.post("/", (req, res) => {
   const subtotal = cartRows.reduce((sum, r) => sum + r.price * r.quantity, 0);
   const referenceNumber = generateReferenceNumber();
 
-  const placeOrder = db.transaction(() => {
-    const info = db
-      .prepare(
-        `INSERT INTO orders (reference_number, user_id, name, email, phone, address, subtotal, payment_status, razorpay_order_id, razorpay_payment_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      )
-      .run(
+  const tx = await db.transaction("write");
+  let orderId;
+  try {
+    const info = await tx.execute({
+      sql: `INSERT INTO orders (reference_number, user_id, name, email, phone, address, subtotal, payment_status, razorpay_order_id, razorpay_payment_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
         referenceNumber,
         req.session.userId || null,
         String(name).trim(),
@@ -78,39 +77,41 @@ router.post("/", (req, res) => {
         paymentStatus,
         razorpayOrderId || null,
         razorpayPaymentId || null
-      );
+      ]
+    });
+    orderId = Number(info.lastInsertRowid);
 
-    const orderId = info.lastInsertRowid;
-    const insertItem = db.prepare(
-      `INSERT INTO order_items (order_id, product_id, name, price, quantity, line_total)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    );
     for (const r of cartRows) {
-      insertItem.run(orderId, r.product_id, r.product_name, r.price, r.quantity, r.price * r.quantity);
+      await tx.execute({
+        sql: `INSERT INTO order_items (order_id, product_id, name, price, quantity, line_total)
+              VALUES (?, ?, ?, ?, ?, ?)`,
+        args: [orderId, r.product_id, r.product_name, r.price, r.quantity, r.price * r.quantity]
+      });
     }
-    db.prepare("DELETE FROM cart_items WHERE owner_id = ?").run(owner);
-    return orderId;
-  });
+    await tx.execute({ sql: "DELETE FROM cart_items WHERE owner_id = ?", args: [owner] });
+    await tx.commit();
+  } catch (err) {
+    await tx.rollback();
+    throw err;
+  }
 
-  const orderId = placeOrder();
   res.status(201).json({ id: orderId, referenceNumber, subtotal, paymentStatus });
 });
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: "Login required to view order history." });
-  const orders = db
-    .prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC")
-    .all(req.session.userId);
-  const itemsStmt = db.prepare("SELECT * FROM order_items WHERE order_id = ?");
+  const orders = await all("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC", [req.session.userId]);
   res.json(
-    orders.map((o) => ({
-      id: o.id,
-      referenceNumber: o.reference_number,
-      subtotal: o.subtotal,
-      paymentStatus: o.payment_status,
-      createdAt: o.created_at,
-      items: itemsStmt.all(o.id)
-    }))
+    await Promise.all(
+      orders.map(async (o) => ({
+        id: o.id,
+        referenceNumber: o.reference_number,
+        subtotal: o.subtotal,
+        paymentStatus: o.payment_status,
+        createdAt: o.created_at,
+        items: await all("SELECT * FROM order_items WHERE order_id = ?", [o.id])
+      }))
+    )
   );
 });
 

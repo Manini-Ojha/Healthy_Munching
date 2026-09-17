@@ -1,54 +1,55 @@
 const express = require("express");
-const { db, rowToProduct } = require("../db");
+const { all, get, run, rowToProduct } = require("../db");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  const rows = db.prepare("SELECT * FROM products").all();
+router.get("/", async (req, res) => {
+  const rows = await all("SELECT * FROM products");
   res.json(rows.map(rowToProduct));
 });
 
-router.get("/:id", (req, res) => {
-  const row = db.prepare("SELECT * FROM products WHERE id = ?").get(req.params.id);
+router.get("/:id", async (req, res) => {
+  const row = await get("SELECT * FROM products WHERE id = ?", [req.params.id]);
   if (!row) return res.status(404).json({ error: "Product not found" });
   res.json(rowToProduct(row));
 });
 
 // "You might also like" — other products in the same category, falling back
 // to other featured products if the category doesn't have enough.
-router.get("/:id/suggestions", (req, res) => {
-  const current = db.prepare("SELECT * FROM products WHERE id = ?").get(req.params.id);
+router.get("/:id/suggestions", async (req, res) => {
+  const current = await get("SELECT * FROM products WHERE id = ?", [req.params.id]);
   if (!current) return res.status(404).json({ error: "Product not found" });
 
   // Only suggest products with a real photo (.png/.jpg/...), not the SVG
   // placeholder icons.
-  const sameCategory = db
-    .prepare("SELECT * FROM products WHERE category = ? AND id != ? AND image NOT LIKE '%.svg' ORDER BY RANDOM() LIMIT 4")
-    .all(current.category, current.id);
+  const sameCategory = await all(
+    "SELECT * FROM products WHERE category = ? AND id != ? AND image NOT LIKE '%.svg' ORDER BY RANDOM() LIMIT 4",
+    [current.category, current.id]
+  );
 
   let suggestions = sameCategory;
   if (suggestions.length < 4) {
     const usedIds = [current.id, ...suggestions.map((p) => p.id)];
     const placeholders = usedIds.map(() => "?").join(",");
-    const filler = db
-      .prepare(`SELECT * FROM products WHERE id NOT IN (${placeholders}) AND image NOT LIKE '%.svg' ORDER BY RANDOM() LIMIT ?`)
-      .all(...usedIds, 4 - suggestions.length);
+    const filler = await all(
+      `SELECT * FROM products WHERE id NOT IN (${placeholders}) AND image NOT LIKE '%.svg' ORDER BY RANDOM() LIMIT ?`,
+      [...usedIds, 4 - suggestions.length]
+    );
     suggestions = suggestions.concat(filler);
   }
 
   res.json(suggestions.map(rowToProduct));
 });
 
-router.get("/:id/reviews", (req, res) => {
-  const product = db.prepare("SELECT id FROM products WHERE id = ?").get(req.params.id);
+router.get("/:id/reviews", async (req, res) => {
+  const product = await get("SELECT id FROM products WHERE id = ?", [req.params.id]);
   if (!product) return res.status(404).json({ error: "Product not found" });
 
-  const rows = db
-    .prepare("SELECT * FROM reviews WHERE product_id = ? ORDER BY created_at DESC")
-    .all(req.params.id);
-  const summary = db
-    .prepare("SELECT COUNT(*) as count, AVG(rating) as average FROM reviews WHERE product_id = ?")
-    .get(req.params.id);
+  const rows = await all("SELECT * FROM reviews WHERE product_id = ? ORDER BY created_at DESC", [req.params.id]);
+  const summary = await get(
+    "SELECT COUNT(*) as count, AVG(rating) as average FROM reviews WHERE product_id = ?",
+    [req.params.id]
+  );
 
   res.json({
     reviews: rows.map((r) => ({
@@ -63,8 +64,8 @@ router.get("/:id/reviews", (req, res) => {
   });
 });
 
-router.post("/:id/reviews", (req, res) => {
-  const product = db.prepare("SELECT id FROM products WHERE id = ?").get(req.params.id);
+router.post("/:id/reviews", async (req, res) => {
+  const product = await get("SELECT id FROM products WHERE id = ?", [req.params.id]);
   if (!product) return res.status(404).json({ error: "Product not found" });
 
   const { rating, comment } = req.body || {};
@@ -80,7 +81,7 @@ router.post("/:id/reviews", (req, res) => {
 
   let userId = null;
   if (req.session.userId) {
-    const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.session.userId);
+    const user = await get("SELECT * FROM users WHERE id = ?", [req.session.userId]);
     if (user) {
       userId = user.id;
       authorName = user.name;
@@ -90,9 +91,10 @@ router.post("/:id/reviews", (req, res) => {
     return res.status(400).json({ error: "Please enter your name.", field: "authorName" });
   }
 
-  db.prepare(
-    "INSERT INTO reviews (product_id, user_id, author_name, rating, comment) VALUES (?, ?, ?, ?, ?)"
-  ).run(req.params.id, userId, String(authorName).trim(), ratingNum, String(comment).trim());
+  await run(
+    "INSERT INTO reviews (product_id, user_id, author_name, rating, comment) VALUES (?, ?, ?, ?, ?)",
+    [req.params.id, userId, String(authorName).trim(), ratingNum, String(comment).trim()]
+  );
 
   res.status(201).json({ ok: true });
 });
