@@ -26,8 +26,8 @@
     `;
   }
 
-  function render() {
-    const cart = window.WaffleNibbles.cart.getCart();
+  async function render() {
+    const cart = await window.WaffleNibbles.cart.getCart();
     const hasItemsSection = document.querySelector("[data-cart-has-items]");
     const emptySection = document.querySelector("[data-cart-empty]");
     const itemsContainer = document.querySelector("[data-cart-items]");
@@ -45,13 +45,12 @@
     document.querySelector("[data-cart-item-count]").textContent = String(cart.itemCount);
     document.querySelector("[data-cart-subtotal]").textContent = String(cart.subtotal);
 
-    wireRowControls();
+    wireRowControls(cart);
   }
 
-  function wireRowControls() {
+  function wireRowControls(cart) {
     document.querySelectorAll("[data-cart-item-row]").forEach((row) => {
       const productId = row.getAttribute("data-product-id");
-      const cart = window.WaffleNibbles.cart.getCart();
       const entry = cart.items.find((i) => i.product.id === productId);
       if (!entry) return;
 
@@ -59,23 +58,23 @@
       const increaseBtn = row.querySelector("[data-qty-increase]");
       const removeBtn = row.querySelector("[data-remove-item]");
 
-      decreaseBtn.addEventListener("click", () => {
-        window.WaffleNibbles.cart.updateQuantity(productId, entry.quantity - 1);
+      decreaseBtn.addEventListener("click", async () => {
+        await window.WaffleNibbles.cart.updateQuantity(productId, entry.quantity - 1);
         afterChange();
       });
-      increaseBtn.addEventListener("click", () => {
-        window.WaffleNibbles.cart.updateQuantity(productId, entry.quantity + 1);
+      increaseBtn.addEventListener("click", async () => {
+        await window.WaffleNibbles.cart.updateQuantity(productId, entry.quantity + 1);
         afterChange();
       });
-      removeBtn.addEventListener("click", () => {
-        window.WaffleNibbles.cart.removeItem(productId);
+      removeBtn.addEventListener("click", async () => {
+        await window.WaffleNibbles.cart.removeItem(productId);
         afterChange();
       });
     });
   }
 
-  function afterChange() {
-    render();
+  async function afterChange() {
+    await render();
     window.WaffleNibbles.nav.updateCartBadge();
   }
 

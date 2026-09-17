@@ -65,9 +65,9 @@
     const addBtn = document.querySelector("[data-add-to-cart]");
     const confirm = document.querySelector("[data-add-confirm]");
     if (!addBtn) return;
-    addBtn.addEventListener("click", () => {
-      window.WaffleNibbles.cart.addItem(product.id, quantity);
-      window.WaffleNibbles.nav.updateCartBadge();
+    addBtn.addEventListener("click", async () => {
+      await window.WaffleNibbles.cart.addItem(product.id, quantity);
+      await window.WaffleNibbles.nav.updateCartBadge();
       if (confirm) {
         confirm.hidden = false;
         window.clearTimeout(wireAddToCart._t);
@@ -80,13 +80,17 @@
     });
   }
 
-  function init() {
-    const products = (window.WaffleNibbles && window.WaffleNibbles.PRODUCTS) || [];
+  async function init() {
     const id = getProductIdFromUrl();
-    const product = products.find((p) => p.id === id);
-
     const foundEl = document.querySelector("[data-product-found]");
     const notFoundEl = document.querySelector("[data-product-not-found]");
+
+    let product = null;
+    try {
+      product = id ? await window.WaffleNibbles.api.get(`/api/products/${encodeURIComponent(id)}`) : null;
+    } catch (err) {
+      product = null;
+    }
 
     if (!product) {
       if (foundEl) foundEl.hidden = true;
