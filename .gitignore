@@ -1,6 +1,16 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Local tooling
+.claude/
+.specify/
+
+# Node / logs
 node_modules/
-server/data.sqlite
-server/data.sqlite-shm
-server/data.sqlite-wal
-server/certs/key.pem
-.env
+*.log

@@ -24,7 +24,6 @@
         <a href="index.html" data-nav-link>Home</a>
         <a href="catalog.html" data-nav-link>Shop</a>
         <a href="cart.html" data-nav-link class="cart-link">Cart <span class="cart-badge" data-cart-count hidden>0</span></a>
-        <a href="login.html" data-account-link>Login</a>
       </nav>
     </div>
   </header>
@@ -36,12 +35,6 @@
     </div>
 
     <section class="container page-section">
-      <div class="search-bar">
-        <label for="catalog-search" class="visually-hidden">Search products</label>
-        <input type="search" id="catalog-search" data-catalog-search placeholder="Search waffles, cookies, ingredients..." autocomplete="off" />
-      </div>
-
-      <p class="search-no-results" data-catalog-no-results hidden>No products match your search.</p>
       <div class="product-grid" data-catalog-grid aria-live="polite"></div>
     </section>
   </main>
@@ -72,7 +65,7 @@
     </div>
   </footer>
 
-  <script src="js/api.js" defer></script>
+  <script src="js/data/products.js" defer></script>
   <script src="js/cart.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/catalog.js" defer></script>

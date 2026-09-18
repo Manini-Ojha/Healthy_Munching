@@ -18,10 +18,10 @@
     `;
   }
 
-  async function render() {
+  function render() {
     const grid = document.querySelector("[data-featured-grid]");
     if (!grid) return;
-    const products = await window.WaffleNibbles.api.get("/api/products");
+    const products = (window.WaffleNibbles && window.WaffleNibbles.PRODUCTS) || [];
     const featured = products.filter((p) => p.featured);
     grid.innerHTML = featured.map(productCardHTML).join("");
   }

@@ -3,47 +3,128 @@
  * Every page that reads or mutates the cart MUST go through these functions
  * (Constitution Principle I: no duplicated cart logic across pages).
  *
- * Persists server-side (SQLite via the /api/cart endpoints), keyed by the
- * session cookie so it works for guests and stays with the account once
- * they log in.
+ * Persists to localStorage under STORAGE_KEY. If localStorage is unavailable
+ * (private browsing, storage disabled, etc.) it falls back to an in-memory
+ * array for the lifetime of the current page load, per research.md
+ * "localStorage unavailability handled via in-memory fallback".
  */
 (function () {
   "use strict";
 
-  const api = () => window.WaffleNibbles.api;
+  const STORAGE_KEY = "waffle-nibbles-cart";
 
-  /** @returns {Promise<{items: {product: object, quantity: number, lineTotal: number}[], subtotal: number, itemCount: number}>} */
+  /** In-memory fallback store, used only if localStorage throws. */
+  let memoryStore = [];
+  let storageAvailable = true;
+
+  function readRaw() {
+    if (!storageAvailable) {
+      return memoryStore;
+    }
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      console.warn("Waffle Nibbles: localStorage unavailable, using in-memory cart for this session.", err);
+      storageAvailable = false;
+      return memoryStore;
+    }
+  }
+
+  function writeRaw(items) {
+    if (!storageAvailable) {
+      memoryStore = items;
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (err) {
+      console.warn("Waffle Nibbles: localStorage write failed, using in-memory cart for this session.", err);
+      storageAvailable = false;
+      memoryStore = items;
+    }
+  }
+
+  function findProduct(productId) {
+    const products = (window.WaffleNibbles && window.WaffleNibbles.PRODUCTS) || [];
+    return products.find((p) => p.id === productId) || null;
+  }
+
+  /** @returns {{productId: string, quantity: number}[]} raw persisted cart items */
+  function getRawItems() {
+    return readRaw();
+  }
+
+  /**
+   * @returns {{items: {product: object, quantity: number, lineTotal: number}[], subtotal: number, itemCount: number}}
+   */
   function getCart() {
-    return api().get("/api/cart");
+    const raw = readRaw();
+    const items = [];
+    let subtotal = 0;
+    let itemCount = 0;
+
+    raw.forEach((entry) => {
+      const product = findProduct(entry.productId);
+      if (!product) {
+        return; // Skip cart entries whose product no longer exists in the catalog.
+      }
+      const lineTotal = product.price * entry.quantity;
+      items.push({ product, quantity: entry.quantity, lineTotal });
+      subtotal += lineTotal;
+      itemCount += entry.quantity;
+    });
+
+    return { items, subtotal, itemCount };
   }
 
   function addItem(productId, quantity) {
-    return api().post("/api/cart", { productId, quantity });
+    const qty = Math.max(1, Math.floor(Number(quantity) || 1));
+    const raw = readRaw();
+    const existing = raw.find((entry) => entry.productId === productId);
+    if (existing) {
+      existing.quantity += qty;
+    } else {
+      raw.push({ productId, quantity: qty });
+    }
+    writeRaw(raw);
   }
 
   function updateQuantity(productId, quantity) {
-    return api().put(`/api/cart/${encodeURIComponent(productId)}`, { quantity });
+    const qty = Math.floor(Number(quantity) || 0);
+    let raw = readRaw();
+    if (qty < 1) {
+      raw = raw.filter((entry) => entry.productId !== productId);
+    } else {
+      const existing = raw.find((entry) => entry.productId === productId);
+      if (existing) {
+        existing.quantity = qty;
+      }
+    }
+    writeRaw(raw);
   }
 
   function removeItem(productId) {
-    return api().del(`/api/cart/${encodeURIComponent(productId)}`);
+    const raw = readRaw().filter((entry) => entry.productId !== productId);
+    writeRaw(raw);
   }
 
   function clearCart() {
-    return api().del("/api/cart");
+    writeRaw([]);
   }
 
-  async function getSubtotal() {
-    return (await getCart()).subtotal;
+  function getSubtotal() {
+    return getCart().subtotal;
   }
 
-  async function getItemCount() {
-    return (await getCart()).itemCount;
+  function getItemCount() {
+    return getCart().itemCount;
   }
 
   window.WaffleNibbles = window.WaffleNibbles || {};
   window.WaffleNibbles.cart = {
     getCart,
+    getRawItems,
     addItem,
     updateQuantity,
     removeItem,

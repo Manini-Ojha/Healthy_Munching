@@ -24,7 +24,6 @@
         <a href="index.html" data-nav-link>Home</a>
         <a href="catalog.html" data-nav-link>Shop</a>
         <a href="cart.html" data-nav-link class="cart-link">Cart <span class="cart-badge" data-cart-count hidden>0</span></a>
-        <a href="login.html" data-account-link>Login</a>
       </nav>
     </div>
   </header>
@@ -62,8 +61,7 @@
             <p class="form-error" data-error-for="address">Please enter your delivery address.</p>
           </div>
 
-          <p class="form-error" data-payment-notice hidden></p>
-          <button type="submit" class="btn btn-primary" data-submit-order>Pay &amp; Place Order</button>
+          <button type="submit" class="btn btn-primary" data-submit-order>Place Order</button>
         </form>
 
         <aside class="order-summary" aria-label="Order summary">
@@ -120,8 +118,7 @@
     </div>
   </footer>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script src="js/api.js" defer></script>
+  <script src="js/data/products.js" defer></script>
   <script src="js/cart.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/checkout.js" defer></script>

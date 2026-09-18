@@ -72,6 +72,10 @@
     return isValid;
   }
 
+  function generateReferenceNumber() {
+    return `WN-${Date.now().toString(36).toUpperCase()}`;
+  }
+
   function showConfirmation(customer, referenceNumber) {
     document.querySelector("[data-checkout-form-section]").hidden = true;
     const confirmationSection = document.querySelector("[data-confirmation-section]");
@@ -81,77 +85,13 @@
     document.querySelector("[data-confirm-email]").textContent = customer.email;
   }
 
-  function showPaymentNotice(message) {
-    const el = document.querySelector("[data-payment-notice]");
-    if (!el) return;
-    el.textContent = message;
-    el.hidden = !message;
-  }
-
-  async function placeOrder(customer, paymentFields, submitBtn) {
-    try {
-      const order = await window.WaffleNibbles.api.post("/api/orders", { ...customer, ...paymentFields });
-      showConfirmation(customer, order.referenceNumber);
-      window.WaffleNibbles.nav.updateCartBadge();
-    } catch (err) {
-      submitBtn.disabled = false;
-      window.alert(err.message || "Could not place order. Please try again.");
-    }
-  }
-
-  async function payWithRazorpay(customer, submitBtn) {
-    let paymentConfig;
-    try {
-      paymentConfig = await window.WaffleNibbles.api.post("/api/payment/create-order");
-    } catch (err) {
-      submitBtn.disabled = false;
-      showPaymentNotice(err.message || "Could not start payment.");
-      return;
-    }
-
-    const rzp = new window.Razorpay({
-      key: paymentConfig.keyId,
-      order_id: paymentConfig.razorpayOrderId,
-      amount: paymentConfig.amount,
-      currency: paymentConfig.currency,
-      name: "Healthy Munching",
-      description: "Waffle Nibbles order",
-      prefill: { name: customer.name, email: customer.email, contact: customer.phone },
-      theme: { color: "#c1682b" },
-      handler: (response) => {
-        placeOrder(
-          customer,
-          {
-            razorpayOrderId: response.razorpay_order_id,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpaySignature: response.razorpay_signature
-          },
-          submitBtn
-        );
-      },
-      modal: {
-        ondismiss: () => {
-          submitBtn.disabled = false;
-        }
-      }
-    });
-
-    rzp.on("payment.failed", () => {
-      submitBtn.disabled = false;
-      showPaymentNotice("Payment failed. Please try again.");
-    });
-
-    rzp.open();
-  }
-
   function wireSubmit() {
     const form = document.querySelector("[data-checkout-form]");
     if (!form) return;
     const submitBtn = document.querySelector("[data-submit-order]");
 
-    form.addEventListener("submit", async (event) => {
+    form.addEventListener("submit", (event) => {
       event.preventDefault();
-      showPaymentNotice("");
       const formData = new FormData(form);
 
       if (!validateForm(formData)) {
@@ -161,25 +101,28 @@
       // Prevent double-submission (e.g., double-click).
       submitBtn.disabled = true;
 
+      const cart = window.WaffleNibbles.cart.getCart();
       const customer = {
         name: (formData.get("name") || "").toString().trim(),
         email: (formData.get("email") || "").toString().trim(),
         phone: (formData.get("phone") || "").toString().trim(),
         address: (formData.get("address") || "").toString().trim()
       };
+      const order = {
+        referenceNumber: generateReferenceNumber(),
+        customer,
+        items: cart.items,
+        subtotal: cart.subtotal
+      };
 
-      const { configured } = await window.WaffleNibbles.api.get("/api/payment/config");
-      if (configured) {
-        payWithRazorpay(customer, submitBtn);
-      } else {
-        // Gateway not set up yet (no Razorpay keys in .env) — place the order unpaid so checkout stays testable.
-        placeOrder(customer, {}, submitBtn);
-      }
+      showConfirmation(customer, order.referenceNumber);
+      window.WaffleNibbles.cart.clearCart();
+      window.WaffleNibbles.nav.updateCartBadge();
     });
   }
 
-  async function init() {
-    const cart = await window.WaffleNibbles.cart.getCart();
+  function init() {
+    const cart = window.WaffleNibbles.cart.getCart();
     if (cart.items.length === 0) {
       showEmptyCartGuard();
       return;
