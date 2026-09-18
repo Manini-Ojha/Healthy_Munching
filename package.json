@@ -1,0 +1,16 @@
+{
+  "name": "healthy_munching",
+  "version": "1.0.0",
+  "description": "Waffle Nibbles storefront - static frontend with a Turso-backed product catalog API on Vercel Functions.",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "seed": "node scripts/seed-products.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

@@ -80,7 +80,8 @@
     });
   }
 
-  function init() {
+  async function init() {
+    await window.WaffleNibbles.ready;
     const products = (window.WaffleNibbles && window.WaffleNibbles.PRODUCTS) || [];
     const id = getProductIdFromUrl();
     const product = products.find((p) => p.id === id);

@@ -37,10 +37,11 @@
     });
   }
 
-  function init() {
-    updateCartBadge();
+  async function init() {
     highlightActiveLink();
     initMobileNavToggle();
+    await window.WaffleNibbles.ready;
+    updateCartBadge();
   }
 
   window.WaffleNibbles = window.WaffleNibbles || {};

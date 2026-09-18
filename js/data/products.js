@@ -121,5 +121,12 @@ const PRODUCTS = [
 
 // Expose on a single shared namespace so plain <script> tags (no build step,
 // no bundler) can access it consistently across every page.
-window.WaffleNibbles = window.WaffleNibbles || {};
-window.WaffleNibbles.PRODUCTS = PRODUCTS;
+if (typeof window !== "undefined") {
+  window.WaffleNibbles = window.WaffleNibbles || {};
+  window.WaffleNibbles.PRODUCTS = PRODUCTS;
+}
+
+// Also usable from Node (seed script) without a bundler.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = PRODUCTS;
+}

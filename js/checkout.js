@@ -121,7 +121,8 @@
     });
   }
 
-  function init() {
+  async function init() {
+    await window.WaffleNibbles.ready;
     const cart = window.WaffleNibbles.cart.getCart();
     if (cart.items.length === 0) {
       showEmptyCartGuard();

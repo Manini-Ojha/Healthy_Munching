@@ -26,7 +26,8 @@
     `;
   }
 
-  function render() {
+  async function render() {
+    await window.WaffleNibbles.ready;
     const cart = window.WaffleNibbles.cart.getCart();
     const hasItemsSection = document.querySelector("[data-cart-has-items]");
     const emptySection = document.querySelector("[data-cart-empty]");
