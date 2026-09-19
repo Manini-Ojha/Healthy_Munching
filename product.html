@@ -24,7 +24,6 @@
         <a href="index.html" data-nav-link>Home</a>
         <a href="catalog.html" data-nav-link>Shop</a>
         <a href="cart.html" data-nav-link class="cart-link">Cart <span class="cart-badge" data-cart-count hidden>0</span></a>
-        <a href="login.html" data-account-link>Login</a>
       </nav>
     </div>
   </header>
@@ -82,48 +81,6 @@
       <p>It may have been removed from the menu.</p>
       <a class="btn btn-primary" href="catalog.html">Back to Shop</a>
     </div>
-
-    <section data-reviews-section hidden class="page-section reviews-section">
-      <h2>Reviews</h2>
-      <p class="reviews-summary" data-reviews-summary></p>
-
-      <div class="reviews-list" data-reviews-list></div>
-      <p data-reviews-empty hidden>No reviews yet — be the first to share your thoughts.</p>
-
-      <form novalidate data-review-form class="review-form">
-        <h3>Write a review</h3>
-        <p class="form-error" data-review-form-error hidden></p>
-
-        <div class="form-field" data-field-wrap="authorName">
-          <label for="review-name">Your name</label>
-          <input type="text" id="review-name" name="authorName" autocomplete="name" />
-        </div>
-
-        <div class="form-field" data-field-wrap="rating">
-          <label>Rating</label>
-          <div class="star-input" data-star-input role="radiogroup" aria-label="Rating">
-            <button type="button" class="star-input__star" data-star="1" aria-label="1 star">★</button>
-            <button type="button" class="star-input__star" data-star="2" aria-label="2 stars">★</button>
-            <button type="button" class="star-input__star" data-star="3" aria-label="3 stars">★</button>
-            <button type="button" class="star-input__star" data-star="4" aria-label="4 stars">★</button>
-            <button type="button" class="star-input__star" data-star="5" aria-label="5 stars">★</button>
-          </div>
-          <input type="hidden" name="rating" data-rating-value value="0" />
-        </div>
-
-        <div class="form-field" data-field-wrap="comment">
-          <label for="review-comment">Comment</label>
-          <textarea id="review-comment" name="comment" rows="3"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary" data-submit-review>Submit Review</button>
-      </form>
-    </section>
-
-    <section data-suggestions-section hidden class="page-section">
-      <h2>You might also like</h2>
-      <div class="product-grid" data-suggestions-grid></div>
-    </section>
   </main>
 
   <footer class="site-footer">

@@ -116,45 +116,6 @@ const PRODUCTS = [
     nutrition: { calories: 148, protein: "3g", carbs: "19g", fat: "6g", fiber: "2g" },
     category: "Gluten-Free",
     featured: false
-  },
-  {
-    id: "dark-chocolate-oat-waffle",
-    name: "Dark Chocolate Oat Waffle",
-    price: 159,
-    image: "assets/images/products/dark-chocolate-oat-waffle.svg",
-    shortDescription: "Rolled oats and 70% dark chocolate chips, no refined sugar.",
-    fullDescription: "A hearty oat-based waffle folded with 70% dark chocolate chips and sweetened only with dates - no refined sugar. High in fiber from rolled oats, this one satisfies a chocolate craving without the sugar crash.",
-    ingredients: ["Rolled oats", "Whole wheat flour", "70% dark chocolate chips", "Date paste", "Eggs", "Milk", "Baking powder"],
-    allergens: ["Gluten (wheat, oats)", "Egg", "Milk", "May contain traces of tree nuts"],
-    nutrition: { calories: 195, protein: "5g", carbs: "26g", fat: "8g", fiber: "4g" },
-    category: "Classic",
-    featured: true
-  },
-  {
-    id: "banana-walnut-waffle",
-    name: "Banana Walnut Waffle",
-    price: 155,
-    image: "assets/images/products/banana-walnut-waffle.svg",
-    shortDescription: "Mashed banana and crushed walnuts for natural sweetness.",
-    fullDescription: "Ripe mashed bananas do the sweetening here, paired with crushed walnuts for omega-3s and texture. A soft, moist waffle that works as breakfast or an afternoon pick-me-up.",
-    ingredients: ["Whole wheat flour", "Mashed banana", "Crushed walnuts", "Eggs", "Milk", "Baking powder", "Cinnamon"],
-    allergens: ["Tree nuts (walnuts)", "Gluten (wheat)", "Egg", "Milk"],
-    nutrition: { calories: 175, protein: "5g", carbs: "24g", fat: "6g", fiber: "3g" },
-    category: "Classic",
-    featured: false
-  },
-  {
-    id: "gluten-free-cinnamon-waffle",
-    name: "Gluten-Free Cinnamon Waffle",
-    price: 175,
-    image: "assets/images/products/gluten-free-cinnamon-waffle.svg",
-    shortDescription: "Warm cinnamon-spiced waffle on a rice-and-oat gluten-free base.",
-    fullDescription: "A cozy cinnamon-spiced waffle built on a certified gluten-free rice-and-oat flour blend, lightly sweetened with jaggery for a warm, caramel-like note.",
-    ingredients: ["Gluten-free oat flour", "Rice flour", "Jaggery", "Cinnamon", "Eggs", "Milk", "Baking powder"],
-    allergens: ["Egg", "Milk", "Certified gluten-free oats"],
-    nutrition: { calories: 170, protein: "4g", carbs: "21g", fat: "7g", fiber: "3g" },
-    category: "Gluten-Free",
-    featured: false
   }
 ];
 
@@ -165,7 +126,7 @@ if (typeof window !== "undefined") {
   window.WaffleNibbles.PRODUCTS = PRODUCTS;
 }
 
-// Also usable from Node (server-side seed script) without a bundler.
+// Also usable from Node (seed script) without a bundler.
 if (typeof module !== "undefined" && module.exports) {
   module.exports = PRODUCTS;
 }
